@@ -40,10 +40,10 @@ export const AuthProvider = ({ children }) => {
     console.log(user);
     navigate('/');
   }
-
+  // https://food-bear.herokuapp.com/api/getrestaurant/
 
   const registerUser = async (username, first_name, last_name, email, password, password2) => {
-    const response = await fetch("http://localhost:8000/api/registeruser/", {
+    const response = await fetch("https://food-bear.herokuapp.com/api/registeruser/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginUser = async (username, password) => {
-    const response = await fetch("http://localhost:8000/api/token/", {
+    const response = await fetch("https://food-bear.herokuapp.com/api/token/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

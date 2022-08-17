@@ -15,7 +15,7 @@ export const ItemDisplay = (props) => {
     'items': [],
   });
 
-  const [baseURL, setbaseURL] = useState("http://localhost:8000/api/getrestaurantdetail/");
+  const [baseURL, setbaseURL] = useState("https://food-bear.herokuapp.com/api/getrestaurantdetail/");
 
   const getrestaurantitemdata = () => {
     axios.get(`${baseURL}${restaurantid}`)

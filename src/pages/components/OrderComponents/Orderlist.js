@@ -31,7 +31,8 @@ export const Orderlist = (props) => {
 
 
 
-            { length !== 0 &&
+            {
+              length !== 0 &&
               props.order.items.map((item) =>
               <tr key={item.id}>
 

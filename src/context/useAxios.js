@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { useContext } from "react";
 import Authcontext from "../context/Authcontext";
 
-const baseURL = "http://localhost:8000/api";
+const baseURL = "https://food-bear.herokuapp.com/api";
 
 const useAxios = () => {
   const { authTokens, setUser, setAuthTokens } = useContext(Authcontext);
