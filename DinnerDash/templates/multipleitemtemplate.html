@@ -1,0 +1,503 @@
+{% extends 'common.html' %}
+{% load custom_tags %}
+
+{%load static%}
+
+{% block title %}
+    <title>
+        {% if page %}
+            {{ page }} | Foodbear
+        {% else %}
+            Items | Foodbear
+        {% endif %}
+    </title>
+{% endblock %}
+
+
+{% block style %}
+                <link rel="stylesheet" type="text/css" href="{% static 'css/MultipleItemTemplate_style.css' %}"/>
+{% endblock %}
+
+{% block content %}
+
+    <div id="alert" style="position: fixed; Top: 0; right: 0; width: 400px; margin-top: 2rem; margin-right: 1rem;">
+    </div>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <script>
+                console.log("{{ message }}");
+
+                document.getElementById("alert").innerHTML = "<div class='alert alert-dark alert-dismissible fade show' role='alert'>  '{{ message}}'. <button type='button' class='close' data-dismiss='alert' aria-label='Close'> <span aria-hidden='true'>&times;</span> </button> </div>"
+
+                setTimeout(function(){
+                    document.getElementById("alert").innerHTML = ""
+                },3000);
+
+
+
+
+                </script>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+    <div class="category-heading my-3 py-3">
+
+        {% if page == 'Restaurant' %}
+            <h3>{{ page }} </h3>
+        {% elif page == 'AdminPanel' %}
+            <h3> Admin Dashboard </h3>
+        {% else %}
+            <h3>{{ Ritems.Name }}</h3>
+            <br>
+            <ul>
+                {% for category in Ritems.category_set.all %}
+                    <li>{{ category }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <br>
+
+        {% if page == 'AdminPanel' %}
+            {{ category }}
+
+            <form class="mx-1 mx-md-4 " method="get" enctype="multipart/form-data">
+                <select name="ordercategory" id="ordercategory" onchange="this.form.submit()">
+                    <option value="none" selected disabled>Select an Category</option>
+                    <option value="all" selected> All Orders </option>
+                    {% for category in categorys %}
+                        <option value="{{ category }}"
+                                {% if ordercategory == category %}selected{% endif %}
+                        >{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+
+        {% elif page != 'Restaurant' %}
+            <form class="mx-1 mx-md-4 " method="get" enctype="multipart/form-data">
+                <select name="itemcategory" id="itemcategory" onchange="this.form.submit()">
+                    <option value="none" selected disabled>Select an Category</option>
+                    <option value="popular" {% if selected_category == 'popular' %}selected{% endif %}> Popular Items</option>
+                    {% for category in Ritems.category_set.all %}
+                        <option value="{{ category }}"
+                                {% if selected_category == category.Name %}selected{% endif %}>{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        {% endif %}
+
+
+    </div>
+                {# ########################################### Restaurant DISPLAY ######################################               #}
+
+
+    <div class="item-main-container">
+        {% if page == 'Restaurant' %}
+            {% for item in items %}
+                <div class="object">
+                    <a href="{% url 'restaurant' item.id %}"><img class="object-image"
+                                                                      src="{{ item.photo.url }}"
+                                                                      alt="{{ item.title }}"></a>
+                    <a href="{% url 'restaurant' item.id %}"><h3
+                            class="object-heading">{{ item.Name |truncatechars:20 }}</h3></a>
+
+                    <p class="object-description">{{ item.description |truncatechars:27 }}<br>
+                        {% if item.item_set.first %}
+                        <i class='fas fa-hamburger'></i>
+                        {{ item.item_set.first }}
+                        <br>
+                        <br>
+                        {% endif %}
+                        <i class="fa fa-map-marker" aria-hidden="true"></i>
+                        {{ item.Address }}
+                    </p>
+                </div>
+            {% endfor %}
+
+                <div style="width: 100%; margin-top: 2rem;">
+                    <nav aria-label="Page navigation example my-3 py-3">
+                      <ul class="pagination justify-content-center">
+                          {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1" >First Page </a>
+                                </li>
+                                  <li class="page-item">
+                                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+                                </li>
+                          {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="?page=1" >First Page </a>
+                                </li>
+                          {% endif %}
+
+                            <li class="page-item active bg-blue">
+                                <span class="page-link">
+                                    {{ page_obj.number }}
+                                </span>
+                            </li>
+
+                      {% if page_obj.has_next %}
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+                            </li>
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last Page</a>
+                            </li>
+                      {% else %}
+                          <li class="page-item disabled">
+                              <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last Page</a>
+                            </li>
+                      {% endif %}
+                      </ul>
+                    </nav>
+            </div>
+
+
+            {# ########################################### Order DISPLAY ######################################               #}
+
+        {% elif page == 'AdminPanel' %}
+
+            <div class="item-main-container-1 my-3">
+                <div id="top-order" style="width: 100%;">
+                    <div class="object-1">
+                                <h4 class="mx-3 px-3" style="width: 40%;">
+                                    Total Orders
+                                </h4>
+                                <h4 class="mx-3 px-3" style="width: 40%;">
+                                    Total Orders: {{ orders|length }}
+                                </h4>
+                    </div>
+                </div>
+            </div>
+
+
+            {% if ordercategory == 'all' %}
+
+                    <div style="width: 100%; display: flex; flex-wrap: wrap; align-content: center">
+
+                    {% for category in categorys %}
+                        {% if category|category_count != 0 %}
+
+                        <div style="width: 40%; margin: 2rem; border: 1px solid #4b1818; max-height: 326px; overflow: auto;">
+                            <div style="width: 100%; display: flex;">
+                                <div style="width: 49%; padding-left: 2rem;">
+                                    <h6>Category: <b>{{ category|upper }}</b></h6>
+                                </div>
+                                <div style="width: 49%; padding-left: 2rem;">
+                                    <h6>Total: <b>{{ category|category_count }}</b></h6>
+                                </div>
+                            </div>
+
+                            <table class="table table-striped" >
+                              <thead>
+                                <tr>
+                                  <th scope="col">Id</th>
+                                  <th scope="col">Name</th>
+                                  <th scope="col">Item</th>
+                                  <th scope="col">Price</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                              </thead>
+
+                              <tbody>
+
+                              {% for order in category|specific_order %}
+                                <tr>
+                                    <th scope="row"><a href="{% url 'orderdetail' order.id %}"> {{ order.id }}</a></th>
+                                  <td><a href="{% url 'orderdetail' order.id %}">{{ order.customer }}</a></td>
+                                  <td><a href="{% url 'orderdetail' order.id %}">{{ order.item_count}}</a></td>
+                                  <td><a href="{% url 'orderdetail' order.id %}">{{ order.price_total }}</a></td>
+                                   <td><a href="{% url 'orderdetail' order.id %}">{{ order.status }}</a></td>
+                                </tr>
+
+                              {% endfor %}
+                              </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    </div>
+
+{# ########################################### ORDER DISPLAY ######################################               #}
+
+            {% else %}
+
+                <div class="item-main-container my-2">
+                    <div class="object-1 my-2">
+                        <h6 class="innerobject px-3">Date</h6>
+                        <h6 class="innerobject px-3">Customer Name</h6>
+                        <h6 class="innerobject px-3">Items</h6>
+                        <h6 class="innerobject px-3">Price</h6>
+                        <h6 class="innerobject px-3">Status</h6>
+                    </div>
+                </div>
+
+                <div id="selectedcategory" style="width: 100%;">
+                    {% for order in orders %}
+                        <div class="item-main-container-1 my-2">
+                            <div class="object-1">
+
+                                <p class="innerobject px-3">
+                                  <a href="{% url 'orderdetail' order.id %}">  {{ order.date_ordered }}  </a>
+                                </p>
+                                <h6 class="innerobject  px-3" style="text-align: center;">
+                                    <a href="{% url 'orderdetail' order.id %}"> {{ order.customer }}  </a>
+                                </h6>
+                                <h6 class="innerobject  px-3">
+                                   <a href="{% url 'orderdetail' order.id %}"> {{ order.item_count}} </a>
+                                </h6>
+
+                                <h6 class="innerobject px-3">
+                                   <a href="{% url 'orderdetail' order.id %}"> {{ order.price_total }} </a>
+                                </h6>
+                                <h6 class="innerobject  px-3">
+                                   <a href="{% url 'orderdetail' order.id %}"> {{ order.status }} </a>
+                                </h6>
+
+                            </div>
+                        </div>
+
+                        <div style="width: 100%; display: flex;">
+                            <div class="my-3" style="margin-left: 14%;">
+                                        <button data-product="{{ order.id }}" data-action="cancel" class="btn btn-danger"
+                                                onclick="updatestatusmethod(
+                                                    {{ order.id }},
+                                                        'cancel'
+                                                )"
+
+                                                style="width: 12rem;"
+                                             {% if order.status == 'cart' and order.status != 'ordered'%}
+                                                disabled
+                                             {% endif %}
+                                        >
+                                            Cancel
+
+                                         </button>
+
+                                </div>
+                            <div class="my-3" style="margin-left: 10%;">
+                                        <button data-product="{{ order.id }}" data-action="paid" class="btn btn-warning"
+
+                                                onclick="updatestatusmethod(
+                                                    {{ order.id }},
+                                                        'paid'
+                                                )"
+
+
+                                                style="width: 12rem;"
+                                             {% if order.status != 'ordered'%}
+                                                disabled
+                                             {% endif %}
+                                        >
+                                            Mark as Paid
+                                         </button>
+                                </div>
+                            <div class="my-3" style="margin-left: 10%;">
+
+                                        <button data-product="{{ order.id }}" data-action="complete" class="btn btn-info"
+
+                                                onclick="updatestatusmethod(
+                                                    {{ order.id }},
+                                                        'complete'
+                                                )"
+
+                                                style="width: 12rem;"
+                                             {% if order.status != 'paid'%}
+                                                disabled
+                                             {% endif %}
+                                        >
+                                            Mark as Completed
+                                         </button>
+                                </div>
+                        </div>
+
+
+                    {% endfor %}
+
+                    <div style="width: 100%; margin-top: 2rem;">
+                        <nav aria-label="Page navigation example my-3 py-3">
+                          <ul class="pagination justify-content-center">
+                              {% if orders.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?ordercategory={{  ordercategory }}&page=1" >First Page </a>
+                                    </li>
+                                      <li class="page-item">
+                                      <a class="page-link" href="?ordercategory={{  ordercategory }}&page={{ orders.previous_page_number }}">{{ orders.previous_page_number }}</a>
+                                    </li>
+                              {% else %}
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="?ordercategory={{  ordercategory }}&page=1" >First Page </a>
+                                    </li>
+                              {% endif %}
+
+                                <li class="page-item active bg-blue">
+                                    <span class="page-link">
+                                        {{ orders.number }}
+                                    </span>
+                                </li>
+
+                          {% if orders.has_next %}
+                              <li class="page-item">
+                                  <a class="page-link" href="?ordercategory={{  ordercategory }}&page={{ orders.next_page_number }}">{{ orders.next_page_number }}</a>
+                                </li>
+                              <li class="page-item">
+                                  <a class="page-link" href="?ordercategory={{  ordercategory }}&page={{ orders.paginator.num_pages }}">Last Page</a>
+                                </li>
+                          {% else %}
+                              <li class="page-item disabled">
+                                  <a class="page-link" href="?ordercategory={{  ordercategory }}&page={{ orders.paginator.num_pages }}">Last Page</a>
+                                </li>
+                          {% endif %}
+                          </ul>
+                        </nav>
+                </div>
+
+                </div>
+
+
+
+            {% endif %}
+
+
+        {% else %}
+{# ########################################### ITEM DISPLAY ######################################               #}
+
+            {% for item in fitems %}
+
+                {% if item.available %}
+                    <div class="object">
+                        <a href="{% url 'detail' item.id %}"><img class="object-image"
+                                                                  src="{{ item.images.all.first.photo}}"
+                                                                  alt="{{ item.title }}"></a>
+                        <a href="{% url 'detail' item.id %}"><h3
+                                class="object-heading"> {{ item.title |truncatechars:20 }}</h3></a>
+
+                        <p class="object-description">{{ item.description |truncatechars:105 }} </p>
+                        <div class="object-action">
+                            <p class="object-price"> PKR {{ item.price }}</p>
+                            <button data-product="{{ item.id }}"
+                                    data-quantity="1"
+                                    data-action="ADD"
+                                    type="button"
+                                    class="object-add-cart btn UpdateCart">ADD TO CART
+                            </button>
+                        </div>
+                    </div>
+
+                {% elif user.is_staff %}
+                    <div class="object">
+
+                        <a href="{% url 'detail' item.id %}"><img class="object-image"
+                                                                  src="{{ item.images.all.first.photo}}"
+                                                                  alt="{{ item.title }}"></a>
+                        <a href="{% url 'detail' item.id %}"><h3
+                                class="object-heading">{{ item.title}}{{ item.title |truncatechars:20 }}</h3></a>
+
+                        <p class="object-description">{{ item.description |truncatechars:105 }} active = {{ item.available }}</p>
+                        <div class="object-action">
+                            <p class="object-price"> PKR {{ item.price }}</p>
+                            <button data-product="{{ item.id }}" data-action="ADD" type="button"
+                                    class="object-add-cart btn UpdateCart" disabled>Not Available
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div style="width: 100%; margin-top: 2rem;">
+                    <nav aria-label="Page navigation example my-3 py-3">
+                      <ul class="pagination justify-content-center">
+                          {% if fitems.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1" >First Page </a>
+                                </li>
+                                  <li class="page-item">
+                                  <a class="page-link" href="?page={{ fitems.previous_page_number }}">{{ fitems.previous_page_number }}</a>
+                                </li>
+                          {% else %}
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="?page=1" >First Page </a>
+                                </li>
+                          {% endif %}
+
+                            <li class="page-item active bg-blue">
+                                <span class="page-link">
+                                    {{ fitems.number }}
+                                </span>
+                            </li>
+
+                      {% if fitems.has_next %}
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ fitems.next_page_number }}">{{ fitems.next_page_number }}</a>
+                            </li>
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ fitems.paginator.num_pages }}">Last Page</a>
+                            </li>
+                      {% else %}
+                          <li class="page-item disabled">
+                              <a class="page-link" href="?page={{ fitems.paginator.num_pages }}">Last Page</a>
+                            </li>
+                      {% endif %}
+                      </ul>
+                    </nav>
+            </div>
+
+
+        {% endif %}
+
+    </div>
+
+
+
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+    function refresh_cart_number_items(Response){
+        if(Response == 'Reject'){
+
+            document.getElementById("alert").innerHTML = "<div class='alert alert-danger alert-dismissible fade show' role='alert'>  Can't add different Restaurant Item in Cart Once <button type='button' class='close' data-dismiss='alert' aria-label='Close'> <span aria-hidden='true'>&times;</span> </button> </div>"
+
+            setTimeout(function(){
+                document.getElementById("alert").innerHTML = ""
+            },3000);
+
+
+        }
+        else {
+            $( "#cart-count" ).load(window.location.href + " #cart-count" );
+
+            document.getElementById("alert").innerHTML = "<div class='alert alert-success alert-dismissible fade show' role='alert'>  Item added to cart. <button type='button' class='close' data-dismiss='alert' aria-label='Close'> <span aria-hidden='true'>&times;</span> </button> </div>"
+
+            setTimeout(function(){
+                document.getElementById("alert").innerHTML = ""
+            },3000);
+
+        }
+    }
+
+    function refresh_selected_category(){
+
+        $( "#selectedcategory" ).load(window.location.href + " #selectedcategory" );
+        $( "#top-order" ).load(window.location.href + " #top-order" );
+
+         document.getElementById("alert").innerHTML = "<div class='alert alert-success alert-dismissible fade show' role='alert'>  Order status changed succesfully. <button type='button' class='close' data-dismiss='alert' aria-label='Close'> <span aria-hidden='true'>&times;</span> </button> </div>"
+
+            setTimeout(function(){
+                document.getElementById("alert").innerHTML = ""
+            },3000);
+
+    }
+
+    function success_message(message){
+        console.log(message)
+    }
+
+
+    </script>
+{% endblock %}

@@ -1,0 +1,194 @@
+{% extends 'common.html' %}
+{% load static %}
+
+{% block title %}
+    <title>
+        {% if formtitle %}
+            {{ formtitle }} | Foodbear
+        {% else %}
+            Form | Foodbear
+        {% endif %}
+    </title>
+{% endblock %}
+
+
+{% block content %}
+
+<div id="alert" style="position: fixed; Top: 0; right: 0; width: 400px; margin-top: 2rem; margin-right: 1rem; z-index: 1;">
+    </div>
+
+  <div class="container h-100 py-3 my-3">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-lg-12 col-xl-11">
+        <div class="card text-black" style="border-radius: 25px;">
+          <div class="card-body p-md-5">
+            <div class="row justify-content-center">
+              <div class="col-md-10 col-lg-6 col-xl-6 order-2 order-lg-1">
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ form.non_field_errors }}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    {% endif %}
+
+                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">
+                    {% if formtitle %}
+                        {{ formtitle }}
+                    {% else %}
+                         Form
+                    {% endif %} </p>
+
+                <form class="mx-1 mx-md-4 " method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                  <div class="d-flex flex-row align-items-center mb-4">
+                    <div class="form-outline flex-fill mb-0">
+
+                            {% if field.errors %}
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    {{ field.errors }}
+                                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                            {% endif %}
+
+                      <label class="form-label">{{ field.label_tag }}</label>
+                        {{ field }}
+
+                    </div>
+                  </div>
+
+                    {% endfor %}
+
+                  <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                            {% if buttonname %}
+                                {{ buttonname }}
+                            {% else %}
+                                Submit
+                            {% endif %}
+                    </button>
+                  </div>
+
+                    <div style="width: 100%;">
+                        {% if formtitle == 'Login' %}
+                            <p> Don't have account, <a href="{% url 'signup' %}" class="text-primary">Register Now</a></p>
+                        {% elif formtitle == 'Signup User' %}
+                            <p> Already have account, <a href="{% url 'login' %}" class="text-primary">Login Now</a></p>
+                        {% endif %}
+                    </div>
+
+                </form>
+
+              </div>
+              <div class="col-md-10 col-lg-6 col-xl-6 d-flex align-items-center order-1 order-lg-2">
+
+                  <img class="Signup Image" src="https://res.cloudinary.com/dzag0ldw1/image/upload/v1659177383/cld-sample-4.jpg" class="img-fluid" alt="Sample image" style="width: 100%">
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+    function myFunction(value){
+        var format = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+        console.log(format.test(value));
+
+        if (format.test(value) == true){
+            document.getElementById("alert").innerHTML = "<div class='alert alert-danger alert-dismissible fade show' role='alert'>  Only accept Alpha and number in title field.(make sure your username dont contain any space) <button type='button' class='close' data-dismiss='alert' aria-label='Close'> <span aria-hidden='true'>&times;</span> </button> </div>"
+
+            setTimeout(function(){
+                document.getElementById("alert").innerHTML = ""
+            },3000);
+        }
+    }
+
+    function Changerestaurantcategory(restaurant){
+        if (restaurant != '') {
+            console.log(restaurant);
+
+
+
+            var url = '/get_restaurant_category/'
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+
+                body: JSON.stringify({'restaurant': restaurant})
+            })
+                .then((response) => {
+                    return response.json()
+
+                })
+
+                 .then((data) => {
+                     console.log(data)
+
+                     field = ""
+
+
+                     for (let index = 0; index < data.length; index++) {
+                         console.log(data[index]['id'] );
+                         field += "<div><label><input type='checkbox' name='category' value=" + data[index]['id'] + ">" + data[index]['Name'] + "</label></div>";
+
+
+                         {#document.getElementById("restaurantcategory").innerHTML = "<label for='restaurantcategory_0'><input type='checkbox' name='category' value='2' id='restaurantcategory_0'>Burgers</label>";#}
+
+
+
+                         {#<div id="restaurantcategory"><div>#}
+                        {#    <label for="restaurantcategory_0"><input type="checkbox" name="category" value="2" id="restaurantcategory_0">#}
+                        {# Burgers</label>#}
+                        {##}
+                        {#</div><div>#}
+                        {#    <label for="restaurantcategory_1"><input type="checkbox" name="category" value="3" id="restaurantcategory_1">#}
+                        {# Deal</label>#}
+                        {##}
+                        {#</div><div>#}
+                        {#    <label for="restaurantcategory_2"><input type="checkbox" name="category" value="4" id="restaurantcategory_2">#}
+                        {# Breakfast</label>#}
+                        {##}
+                        {#</div><div>#}
+                        {#    <label for="restaurantcategory_3"><input type="checkbox" name="category" value="5" id="restaurantcategory_3">#}
+                        {# Desifood</label>#}
+                        {##}
+                        {#</div><div>#}
+                        {#    <label for="restaurantcategory_4"><input type="checkbox" name="category" value="6" id="restaurantcategory_4">#}
+                        {# allo matar</label>#}
+                        {##}
+                        {#</div>#}
+                        {#</div>#}
+                     }
+
+                     console.log(field)
+                    document.getElementById("restaurantcategory").innerHTML = field
+
+                })
+
+
+
+
+
+
+
+        }
+    }
+
+    </script>
+{% endblock %}

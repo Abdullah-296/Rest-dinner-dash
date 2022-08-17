@@ -1,0 +1,357 @@
+{% extends 'common.html' %}
+{% load custom_tags %}
+
+{%load static%}
+
+{% block title %}
+    <title>
+        {% if page %}
+                {{ page }} | Foodbear
+        {% else %}
+                Cart | Foodbear
+        {% endif %}
+    </title>
+{% endblock %}
+
+{% block style %}
+                <link rel="stylesheet" type="text/css" href="{% static 'css/order_style.css' %}"/>
+{% endblock %}
+
+{% block content %}
+
+    <div id="alert" style="position: fixed; Top: 0; right: 0; width: 400px; margin-top: 2rem; margin-right: 1rem;">
+    </div>
+
+
+    <div class="category-heading my-3 py-3">
+        {% if page == 'Orderdetail' %}
+            <h3 class="heading"> Order: {{ order.customer|upper}}</h3>
+            <p>Name: {{ order.customer.first_name|upper}} {{ order.customer.last_name|upper}}</p>
+            <p>Email: {{ order.customer.email|upper}}</p>
+            <p>Date: {{ order.date_ordered }}</p>
+        {% elif page == 'Previous Order' %}
+            <h3> Previous Orders </h3>
+        {% elif user.is_anonymous %}
+            <h3 class="heading"> GUEST ORDER</h3>
+        {% else %}
+            <h3 class="heading"> {{ user|upper }} ORDER</h3>
+        {% endif %}
+    </div>
+
+
+    {% if page == 'Orderdetail' %}
+
+        <div class="item-main-container my-3">
+            <div class="object">
+                <h4 class="total-quantity mx-3 px-3">
+                    Total Quantities: {{ order.item_quantity_count }}
+                </h4>
+                <h4 class="total-price mx-3 px-3">
+                    Total Price: {{ order.price_total }}
+                </h4>
+                <h4 class="total-price mx-3 px-3">
+                    Status: {{ order.status }}
+                </h4>
+            </div>
+
+        <div class="object-1" style="padding-left: 4rem;">
+            <h6 style="width: 100%;">ORDER DATE: &emsp;<b>{{ order.date_ordered }}</b></h6>
+            <h6 style="width: 100%;">PAYMENT DATE: &emsp;<b>{{ order.date_Paid }}</b></h6>
+            <h6 style="width: 100%;">COMPLETED DATE: &emsp;<b>{{ order.date_Completed }}</b></h6>
+        </div>
+
+        </div>
+        <div class="item-main-container">
+            <div class="object my-2">
+                <p style="width:90%; padding-left:1rem;">Image</p>
+                <p style="width:90%; padding-left:1rem;">Title</p>
+                <p style="width:90%; padding-left:1rem;">Description</p>
+                <p style="width:90%; padding-left:1rem;">Quantity</p>
+                <p style="width:90%; padding-left:1rem;">Item price</p>
+                <p style="width:90%; padding-left:1rem;">Total Price</p>
+            </div>
+                {% for item in order.orderitem_set.all %}
+                    <div class="object my-2">
+                        <a class="object-image-box" href="{% url 'detail' item.item.id %}"><img
+                                class="object-image" src="{{ item.item.images.first.photo.url }}"
+                                alt="{{ item.item.title }}"></a>
+                        <a class="object-image-box" href="{% url 'detail' item.item.id %}"><h4
+                                class="object-heading">{{ item.item.title }}</h4></a>
+                        <p class="object-description">{{ item.item.description }}</p>
+                        <p class="object-description">
+                            {{ item.quantity }}
+                        </p>
+                        <p class="object-description">{{ item.item.price }}</p>
+                        <p class="object-description">{{ item.orderitemprice }}</p>
+                    </div>
+                {% endfor %}
+
+        </div>
+
+
+    {% elif user.is_anonymous %}
+
+        <div id="Current-session-order">
+
+
+                        <div class="item-main-container my-3">
+                        <div class="object">
+                            {% for item_id,item in request.session.cartdata.items %}
+                                {% if item_id == 'total' %}
+                                    <h4 class="total-quantity mx-3 px-3">
+                                        Total Quantities: {{ item.quantity }}
+                                    </h4>
+                                    <h4 class="total-price mx-3 px-3">
+                                        Total Price: {{ item.price }}
+                                    </h4>
+                                {% endif %}
+                            {% endfor %}
+                            <button onclick="perform_ajax_update_session_cart(
+                                                    '1',
+                                                    '1',
+                                                    'CLEARCART',
+                                                    'order')"
+
+
+                                    class="btn btn-info"
+                                    style="width: 10rem">
+                                Clear Cart
+                            </button>
+                        </div>
+                    </div>
+
+                        <div class="item-main-container">
+                    <div class="object my-2">
+                        <p style="width:90%; padding-left:1rem;">Image</p>
+                        <p style="width:90%; padding-left:1rem;">Title</p>
+                        <p style="width:90%; padding-left:1rem;">Description</p>
+                        <p style="width:90%; padding-left:1rem;">Quantity</p>
+                        <p style="width:90%; padding-left:1rem;">Item price</p>
+                        <p style="width:90%; padding-left:1rem;">Total Price</p>
+                    </div>
+
+                    {% for item_id,item in request.session.cartdata.items %}
+                        {% if item_id != 'total' %}
+                            <div class="object my-3">
+                                <input type="checkbox" id="{{ item.itemobject.id }}" name="checkbox"
+                                       value="{{ item.itemobject.id }}" class="mr-2">
+                                <a class="object-image-box" href="{% url 'detail' item.itemobject.id %}"><img
+                                        class="object-image" src="{{ item.itemobject.photo }}"
+                                        alt="{{ item.itemobject.title }}"></a>
+                                <a class="object-image-box" href="{% url 'detail' item.itemobject.id %}"><h4
+                                        class="object-heading">{{ item.itemobject.title }}</h4></a>
+                                <p class="object-description">{{ item.itemobject.description }}</p>
+                                <p class="object-description">
+                                    {% if item.item_quantity == '1' %}
+                                        <button class="down-button" style="border:none;background-color: white;" disabled>
+                                            <i class="fa fa-minus">
+                                            </i>
+                                        </button>
+                                    {% else %}
+                                        <button onclick="perform_ajax_update_session_cart(
+                                                            '{{ item.itemobject.id }}',
+                                                            {{ item.item_quantity }},
+                                                                'SUB',
+                                                            'order')"
+
+                                                class="down-button" style="border:none;background-color: white;">
+                                            <i class="fa fa-minus" style="padding: 2px; color: #0992be;">
+                                            </i>
+                                        </button>
+                                    {% endif %}
+
+                                    {{ item.item_quantity }}
+                                    <button onclick="perform_ajax_update_session_cart(
+                                                            '{{ item.itemobject.id }}',
+                                                            {{ item.item_quantity }},
+                                                                'ADD',
+                                                            'order')"
+
+                                            class="down-button "
+                                            style="border:none;background-color: white;">
+                                        <i class="fa fa-plus" style="padding: 2px; color: #0992be;">
+                                        </i>
+                                    </button>
+
+                                </p>
+                                <p class="object-description">{{ item.itemobject.price }}</p>
+                                <p class="object-description">{{ item.total_price }}</p>
+
+                                <button onclick="perform_ajax_update_session_cart(
+                                                '{{ item.itemobject.id }}',
+                                                {{ item.item_quantity }},
+                                                'Remove',
+                                                'order')"
+                                                type="button" class="btn btn-info"
+                                >Remove</button>
+                            </div>
+
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                        <div style="width: 100%; text-align: center; color: red; margin-bottom:5rem; ">
+                Kindly login to proceed further,<b> <a style="color: dodgerblue" href="{% url 'login' %}"> Login </a></b> ...
+            </div>
+
+        </div>
+
+    {% else %}
+
+        {% if page == 'Previous Order' %}
+            {% if user|has_prev %}
+                <h3 class="py-3 my-3 px-3 mx-3"> Previous Order: </h3>
+            {% endif %}
+
+            {% for order in user.order_set.all %}
+                {% if order.status != 'cart' %}
+                    <div class="item-main-container my-3">
+                        <div class="object">
+                            <h4 class="total-quantity">
+                                <a href="{% url 'orderdetail' order.id %}"> Total Quantities: {{ order.item_quantity_count }}</a>
+                            </h4>
+                            <h4 class="total-price">
+                                <a href="{% url 'orderdetail' order.id %}"> Total Price: {{ order.price_total }}</a>
+                            </h4>
+                            <h4>
+                                <a href="{% url 'orderdetail' order.id %}"> Order Status: {{ order.status|upper }}</a>
+                            </h4>
+                        </div>
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+
+
+        {% else %}
+            {% for order in user.order_set.all %}
+                {% if order.status == 'cart' %}
+
+                    <div id="Current-order">
+                         {% if order.item_quantity_count != 0 %}
+
+                            <h3 class="py-3 my-3 px-3 mx-3"> Current Order: </h3>
+                            <div class="item-main-container my-3">
+                                <div class="object">
+                                    <h4 class="total-quantity ">
+                                        Total Quantities: {{ order.item_quantity_count }}
+                                    </h4>
+                                    <h4 class="total-price " style="text-align: center;">
+                                        Total Price: {{ order.price_total }}
+                                    </h4>
+                                    <button onclick="perform_ajax_update_cart(
+                                                            {{ order.id }},
+                                                                'CLEARCART',
+                                                            'order')"
+                                            class="btn btn-info" style="width: 10rem; margin-left: 10rem;">
+                                        Clear Cart
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="item-main-container">
+                                <div class="object my-2">
+                                    <p style="width:90%; padding-left:1rem;">Image</p>
+                                    <p style="width:90%; padding-left:1rem;">Title</p>
+                                    <p style="width:90%; padding-left:1rem;">Description</p>
+                                    <p style="width:90%; padding-left:1rem;">Quantity</p>
+                                    <p style="width:90%; padding-left:1rem;">Item price</p>
+                                    <p style="width:90%; padding-left:1rem;">Total Price</p>
+                                </div>
+                                {% for item in order.orderitem_set.all %}
+                                    <div class="object my-2">
+                                        <input type="checkbox" id="{{ item.item.id }}" name="checkbox"
+                                               value="{{ item.item.id }}" class="mr-2">
+
+                                        <a class="object-image-box" href="{% url 'detail' item.item.id %}"><img
+                                                class="object-image" src="{{ item.item.images.first.photo.url }}"
+                                                alt="{{ item.item.title }}"></a>
+                                        <a class="object-image-box" href="{% url 'detail' item.item.id %}"><h4
+                                                class="object-heading">{{ item.item.title }}</h4></a>
+                                        <p class="object-description">{{ item.item.description }}</p>
+                                        <p class="object-description">
+                                            {% if item.quantity <= 1 %}
+                                                <button class="down-button" style="border:none;background-color: white;"
+                                                        disabled>
+                                                    <i class="fa fa-minus" style="padding: 2px;">
+                                                    </i>
+                                                </button>
+                                            {% else %}
+                                                <button class="down-button"
+                                                        onclick="perform_ajax_update_cart(
+                                                            {{ item.id }},
+                                                                'SUBITEMCART',
+                                                            'order')"
+                                                        style="border:none;background-color: white;">
+
+                                                    <i class="fa fa-minus" style="padding: 2px; color: #0992be;">
+                                                    </i>
+                                                </button>
+                                            {% endif %}
+
+                                            {{ item.quantity }}
+                                            <button onclick="perform_ajax_update_cart(
+                                                            {{ item.id }},
+                                                             'ADDITEMCART',
+                                                            'order')"
+                                                    class="down-button" style="border:none; background-color: white;">
+                                                <i class="fa fa-plus" style="padding: 2px; color: #0992be;">
+                                                </i>
+                                            </button>
+
+                                        </p>
+                                        <p class="object-description">{{ item.item.price }}</p>
+                                        <p class="object-description">{{ item.orderitemprice }}</p>
+                                        <button  onclick="perform_ajax_update_cart(
+                                                            {{ item.id }},
+                                                             'Remove',
+                                                            'order')"
+                                                type="button"
+                                                class="btn btn-info"> Remove
+                                        </button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="my-3" style="margin-left: 45%; width: 100%">
+                                <a class="btn btn-info mr-2" href="{% url 'checkout' %}" role="button">Order Now</a>
+                            </div>
+                         {% endif %}
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        {% endif %}
+
+
+    {% endif %}
+
+{% endblock %}
+
+
+{% block script %}
+
+    <script>
+
+    function refresh_current_order(){
+        $( "#Current-order" ).load(window.location.href + " #Current-order" );
+    }
+    function refresh_session_order(){
+        $( "#Current-session-order" ).load(window.location.href + " #Current-session-order" );
+    }
+
+
+    function refresh_current_cart_number(){
+        $( "#cart-count" ).load(window.location.href + " #cart-count" );
+    }
+
+    function select_item_cart(){
+        document.getElementById("alert").innerHTML = "<div class='alert alert-danger alert-dismissible fade show' role='alert'>  Kindly select first item then click on clear cart <button type='button' class='close' data-dismiss='alert' aria-label='Close'> <span aria-hidden='true'>&times;</span> </button> </div>"
+
+            setTimeout(function(){
+                document.getElementById("alert").innerHTML = ""
+            },3000);
+    }
+
+    </script>
+{% endblock %}

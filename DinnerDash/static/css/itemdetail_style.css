@@ -1,0 +1,52 @@
+
+.detail-container {
+    width: 75%;
+    margin: auto;
+    display: flex;
+}
+.left-side {
+    width: 50%;
+}
+
+.imagecarousel{
+    padding: 2px;
+    width: 90%;
+    border: 2px solid darkred;
+    width: 25rem;
+    margin: auto;
+}
+
+.object-image {
+         width: 80%;
+         height: 300px;
+         padding-bottom: 1rem;
+
+    }
+.right-side {
+    width: 40%;
+    display: block;
+}
+.object-action {
+    display: flex;
+    margin-top: 4rem;
+    width: 90%;
+    margin: auto;
+}
+.object-price {
+    width: 30%;
+}
+.object-add-cart {
+    width: 40%;
+    font-size: 20px;
+    border: 1px solid red;
+}
+
+.object-add-cart:hover{
+    background-color: red;
+    color: white;
+}
+
+.color-r {
+            background-color: red;
+        }
+

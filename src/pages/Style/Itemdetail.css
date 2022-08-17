@@ -1,0 +1,40 @@
+.detail-container {
+  width: 75%;
+  margin: auto;
+  display: flex;
+}
+.left-side {
+  width: 50%;
+}
+
+.object-image-1 {
+  width: 80%;
+  height: 300px;
+  padding-bottom: 1rem;
+  align-items: center;
+}
+.right-side {
+width: 40%;
+display: block;
+}
+.object-action {
+display: flex;
+margin-top: 4rem;
+width: 90%;
+margin: auto;
+}
+.object-price-1 {
+width: 40%;
+margin-left: 20%;
+}
+.object-add-cart-1 {
+width: 40%;
+font-size: 20px;
+border: 1px solid red;
+margin-top: 9px;
+}
+
+.object-add-cart-1:hover{
+background-color: red;
+color: white;
+}

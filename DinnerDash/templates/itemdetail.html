@@ -1,0 +1,187 @@
+{% extends 'common.html' %}
+{%load static%}
+{% load custom_tags %}
+
+
+{% block title %}
+    <title>
+        {% if item.title %}
+            {{ item.title }} | Foodbear
+        {% else %}
+            Item Detail | Foodbear
+        {% endif %}
+    </title>
+{% endblock %}
+
+
+{% block style %}
+            <link rel="stylesheet" type="text/css" href="{% static 'css/itemdetail_style.css' %}"/>
+{% endblock %}
+
+{%block content%}
+
+    <div id="alert" style="position: fixed; Top: 0; right: 0; width: 400px; margin-top: 2rem; margin-right: 1rem;">
+    </div>
+
+<div class="detail-container  my-3" style="margin-bottom: 10rem!important;">
+    <div class="left-side" >
+        {% if item.images.all %}
+        <div id="nextimage" class="carousel slide imagecarousel" data-ride="carousel">
+          <div class="carousel-inner">
+              {% for image in item.images.all%}
+                    <div class="carousel-item
+                        {% if image.id == item.images.all.first.id %}
+                              active
+                          {% endif %} ">
+                      <img class="d-block w-100" src="{{ image.photo.url }}"
+                           alt="Item image" style="height: 400px;">
+                    </div>
+              {% endfor %}
+          </div>
+
+          <a class="carousel-control-prev" href="#nextimage" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#nextimage" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+        <div  class="right-side pl-3" style="border: 2px solid brown">
+        <div id="item-detail">
+            <h3 class="object-heading my-2" style="text-align: center; width: 90%; border: 1px solid red; border-radius: 2rem; margin: auto;">{{ item.title | upper}}</h3>
+            <p class="object-description " style="width: 90%; margin-bottom: 2rem">{{ item.description }}</p>
+            <div class="object-action">
+                <h4 class="object-price mt-2" style="text-align:center; width: 50%"> PKR {{ item.price }}</h4>
+
+                {% if item.available %}
+                    {% if user.is_anonymous %}
+
+                        <button data-quantity="1"
+                                data-product="{{ item.id }}"
+                                data-action="ADD"
+                                type="button"
+
+                                onclick="perform_ajax_update_session_cart(
+                                                            '{{ item.id }}',
+                                                                '1',
+                                                                'ADD',
+                                                            'detail')"
+
+
+                                class="object-add-cart btn ml-3" style="width: 50%">ADD TO CART</button>
+
+                    {% else %}
+
+                        <button data-quantity="1"
+                                data-product="{{ item.id }}"
+                                data-action="ADD"
+                                type="button"
+
+                                onclick="perform_ajax_update_cart(
+                                                            {{ item.id }},
+                                                                'ADD',
+                                                            'detail')"
+
+
+                                class="object-add-cart btn ml-3" style="width: 50%">ADD TO CART</button>
+
+                    {% endif %}
+
+
+                {% endif %}
+            </div>
+            <div style="width: 100%">
+                 {% if user.is_anonymous %}
+                        {% for item_id,item_object in request.session.cartdata.items %}
+                            {% if item_id == item.id|stringformat:"i" %}
+                                <p> Quantity in Cart: <b>{{ item_object.item_quantity }}</b></p>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                     {% if user|cart_order_item_count %}
+                         {% for order in user|cart_order_item_count %}
+                                {% for o_item in order.orderitem_set.all %}
+                                    {% if item.id == o_item.item.id %}
+
+                                    Item quantity in cart: {{ o_item.quantity }}
+                                    {% endif %}
+                                {% endfor %}
+                         {% endfor %}
+                     {% endif  %}
+                {% endif %}
+            </div>
+            <div style="width: 100%; margin-top: 1rem">
+                <div style="width: 60%; margin: auto;">
+                    <a href="{% url 'restaurant' item.restaurant.id %}"><button type="button" class="object-add-cart btn " style="width: 90%;">Back</button></a>
+                </div>
+            </div>
+            {% if user.is_staff  %}
+            <div style="width: 100%; margin-top: 1rem">
+                <div style="width: 60%; margin: auto;">
+                 <a style="margin-top: 2rem" class="my-3 mr-3" href="{% url 'updateitem' item.id %}"><button type="button" class="object-add-cart btn " style="width: 90%;">Edit Item</button></a>
+                </div>
+            </div>
+
+            <div style="width: 100%; margin-top: 1rem">
+                <div style="width: 60%; margin: auto;">
+                    {% if item.available %}
+                        <button
+                                id="changeavailability"
+                                data-orderid="{{ item.id }}"
+                                data-action="unavailable"
+                                class="object-add-cart btn " onclick="itemavailability()" style="width: 90%;">Mark as Unavailable
+                        </button>
+                    {% else %}
+                        <button
+                                id="changeavailability"
+                                data-orderid="{{ item.id }}"
+                                data-action="available"
+                                class="object-add-cart btn ml-3" onclick="itemavailability()" style="width: 90%;">Mark as Available
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+    function refresh_item_detail(Response){
+
+    if(Response == 'Reject'){
+
+            document.getElementById("alert").innerHTML = "<div class='alert alert-danger alert-dismissible fade show' role='alert'>  Can't add different Restaurant Item in Cart Once <button type='button' class='close' data-dismiss='alert' aria-label='Close'> <span aria-hidden='true'>&times;</span> </button> </div>"
+
+            setTimeout(function(){
+                document.getElementById("alert").innerHTML = ""
+            },3000);
+
+
+        }
+        else {
+            $( "#item-detail" ).load(window.location.href + " #item-detail" );
+            $( "#cart-count" ).load(window.location.href + " #cart-count" );
+            document.getElementById("alert").innerHTML = "<div class='alert alert-success alert-dismissible fade show' role='alert'>  Item added to cart. <button type='button' class='close' data-dismiss='alert' aria-label='Close'> <span aria-hidden='true'>&times;</span> </button> </div>"
+
+            setTimeout(function(){
+                document.getElementById("alert").innerHTML = ""
+            },3000);
+
+        }
+
+    }
+
+    </script>
+{% endblock %}

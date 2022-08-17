@@ -1,0 +1,37 @@
+ * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+        font-family: "Roboto", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif;
+    }
+
+    .hero {
+        margin: auto;
+        width: 98%;
+        height: 45vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: lightblue;
+        color: black;
+    }
+
+
+    .navbar {
+        width: 100%
+    }
+    a {
+        color: inherit;
+    }
+    a:hover {
+        color: inherit;
+    }
+    .cart-count{
+        color: red;
+
+    }
+    @media screen and (max-width:900px){
+        .item-container {
+            width: 90%;
+        }
+    }

@@ -1,0 +1,51 @@
+
+{% extends 'common.html' %}
+{%load static%}
+
+{% block title %}
+    <title>
+            Checkout | Foodbear
+    </title>
+{% endblock %}
+
+
+{% block style %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/checkout_style.css' %}"/>
+{% endblock %}
+
+{% block content %}
+
+    <div class="category-heading my-3 py-3">
+        <h3 class="heading"> {{ user|upper}}  Checkout</h3>
+    </div>
+
+    {% for order in user.order_set.all %}
+        {% if order.status == 'cart' %}
+            <div class="item-main-container">
+                        <div class="object">
+                            <h4 class="total-quantity mx-3 px-3">
+                               Total Quantities:  {{ order.item_quantity_count }}
+                            </h4>
+                            <h4 class="total-price mx-3 px-3">
+                               Total Price:  {{ order.price_total }}
+                            </h4>
+                        </div>
+            </div>
+
+            <div class="my-3" style="margin-left: 45%; width: 100%">
+                <button
+                        id="submitorderbutton"
+                        data-orderid="{{ order.id }}"
+                        data-action="SUBMITORDER"
+                        class="btn btn-info" style="width: 10rem" onclick="submitorder()">
+                     Submit order
+                </button>
+            </div>
+
+        {% endif %}
+
+    {% endfor %}
+
+{% endblock %}
+{% block script %}
+{% endblock %}

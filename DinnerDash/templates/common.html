@@ -1,0 +1,144 @@
+{%load static%}
+{% load custom_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    {% block title %}
+    {% endblock %}
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/common_style.css' %}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="https://res.cloudinary.com/dzag0ldw1/image/upload/v1659587773/android-chrome-192x192_wmtz3v.ico">
+    {% block style %}
+    {% endblock %}
+</head>
+
+<body>
+
+
+<div class="navbar">
+ <nav class="navbar navbar-expand-lg navbar-dark bg-light">
+        <a class="navbar-brand text-dark" href="{% url 'homepage' %}">Dinner Dash</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="{% url 'homepage' %}">Home <span class="sr-only">(current)</span></a>
+            </li>
+          </ul>
+
+            {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                      <a class="btn btn-success mr-2" href="{% url 'additem' %}" role="button">Add Item</a>
+                      <a class="btn btn-success mr-2" href="{% url 'addcategory' %}" role="button">Add Category</a>
+                      <a class="btn btn-success mr-2" href="{% url 'addrestaurant' %}" role="button">Add Restaurant</a>
+                      <a class="btn btn-success mr-2" href="{% url 'adminpanel' %}" role="button">Dashboard</a>
+                    {% endif %}
+                <a class="btn btn-success mr-2" href="{% url 'logout' %}" role="button">Logout</a>
+
+                <a class="nav-link text-dark mr-2" href="{% url 'previous_order' %}" >{{ user.username |upper}}</a>
+                <a href="{% url 'cart' %}">
+                    <div  class="cart-count pl-3" id="cart-count">
+                        {{ user|cart_order_count }}
+                    </div>
+                    <i class="fa fa-shopping-cart pr-3" style="font-size:25px; aria-hidden="true"> </i>
+                </a>
+
+            {% else %}
+               <a class="btn btn-success mr-2" href="{% url 'login' %}" role="button">Login</a>
+               <a class="btn btn-success mr-2" href="{% url 'signup' %}" role="button">Signup</a>
+                <a href="{% url 'cart' %}">
+                <div  class="cart-count pl-3" id="cart-count">
+                    {% if request.session.cartdata|length != 0 %}
+                        {{ request.session.cartdata|length |add:"-1"}}
+                    {% else %}
+                        {{ request.session.cartdata|length}}
+                    {% endif %}
+                </div>
+                    <i class="fa fa-shopping-cart pr-3" style="font-size:25px; aria-hidden="true">
+                    </i>
+
+                </a>
+            {% endif %}
+
+        </div>
+      </nav>
+</div>
+
+
+<header class="hero">
+    {% if heading %}
+        <h1>{{ heading }}</h1>
+    {% else %}
+        <h1>Dinner Dash</h1>
+    {% endif %}
+</header>
+
+<div class="item-container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+
+
+<script type="text/javascript">
+    var cf = "{{ csrf_token }}";
+
+    function getToken(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+    var user = "{{ request.user }}";
+
+
+    const csrftoken = getToken('csrftoken');
+
+
+
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+<script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+></script>
+
+
+
+<script type="text/javascript" src="{% static 'js/cart2.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/checkout.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/orderstatus.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/itemunavailable.js' %}"></script>
+
+
+{% block script %}
+{% endblock %}
+
+</body>
+</html>

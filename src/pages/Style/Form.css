@@ -1,0 +1,21 @@
+.form-container{
+  width: 40%;
+  margin: auto;
+  margin-top: 2rem;
+  padding: 2rem;
+}
+
+fieldset {
+  width: 90%;
+  margin: auto;
+
+}
+
+.heading {
+text-align: center;
+margin-bottom: 2rem;
+}
+
+.errormessage{
+  color: red;
+}
