@@ -6,7 +6,7 @@ import { Restaurantblock } from './Restaurantblock';
 
 export const Restaurants = () => {
 
-  const [baseURL, setbaseURL] = useState("http://localhost:8000/api/getrestaurant/")
+  const [baseURL, setbaseURL] = useState("https://food-bear.herokuapp.com/api/getrestaurant/")
 
   const [Restaurantdata, setRestaurantdata] = useState({
     'count': 0,

@@ -20,7 +20,7 @@ export const ItemDetail = (props) => {
     'restaurant': ''
   });
 
-  const [baseURL, setbaseURL] = useState("http://localhost:8000/api/getitemdetail/");
+  const [baseURL, setbaseURL] = useState("https://food-bear.herokuapp.com/api/getitemdetail/");
 
   const getitemdetail = async () => {
 
