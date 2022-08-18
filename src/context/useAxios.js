@@ -24,8 +24,6 @@ const useAxios = () => {
       refresh: authTokens.refresh
     });
 
-    console.log(response.data)
-
     localStorage.setItem("authTokens", JSON.stringify(response.data));
 
     setAuthTokens(response.data);

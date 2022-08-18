@@ -20,18 +20,9 @@ export const Itemblock = (props) => {
             : <button disabled={true} className='object-add-cart'> Not Available</button>
           }
 
-          {/* <button type="button"
-                  className="object-add-cart btn UpdateCart">ADD TO CART
-          </button> */}
       </div>
       <Outlet/>
 
     </div>
   )
 }
-
-// {props.item.id}
-// {props.item.title}
-// {props.item.description}
-// {props.item.price}
-// {props.item.order_count}

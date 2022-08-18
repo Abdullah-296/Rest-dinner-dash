@@ -26,9 +26,6 @@ function App() {
             <Route exact path="/item/:itemid" element={<ItemDetail />} />
             <Route exact path="/cart" element={<Cart />} />
 
-            {/* <Route exact path="/admin" element={<AdminDashboard />} /> */}
-            {/* <Protectedroute element={<AdminDashboard />} path="/admin" exact /> */}
-
 
             <Route exact path='/admin' element={<Protectedroute/>}>
               <Route exact path='/admin' element={<AdminDashboard/>}/>

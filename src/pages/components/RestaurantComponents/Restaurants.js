@@ -68,34 +68,3 @@ const changeurln = () =>{
     </div>
   )
 }
-
-
-
-  // useEffect(()=>{
-  //   axios.get(baseURL)
-  //   .then((response) => {
-  //     // setRestaurantdata()
-
-  //     setRestaurantdata({...Restaurantdata, 'count': response.data['count'] });
-  //     // setRestaurantdata({...Restaurantdata, 'next': response.data['next'] });
-  //     // setRestaurantdata({...Restaurantdata, 'previous': response.data['previous'] });
-  //     // setRestaurantdata({...Restaurantdata, 'data': response.data['data'] });
-
-
-  //     console.log(response.data);
-  //     // console.log(response.data['results']);
-  //     // console.log(response.data['count']);
-  //     // console.log(response.data['next']);
-  //     // console.log(response.data['data']);
-  //   }, []);
-
-
-  // })
-
-  // <p key={restaurant.id}>
-      //   {restaurant.id}
-      //   {restaurant.Name}
-      //   {restaurant.Address}
-      //   {restaurant.description}
-      //   {restaurant.photo}
-      // </p>
