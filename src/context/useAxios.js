@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { useContext } from "react";
 import Authcontext from "../context/Authcontext";
 
-const baseURL = "http://localhost:8000/api";
+const baseURL = "https://food-bear.herokuapp.com/api";
 
 const useAxios = () => {
   const { authTokens, setUser, setAuthTokens } = useContext(Authcontext);
@@ -23,8 +23,6 @@ const useAxios = () => {
     const response = await axios.post(`${baseURL}/token/refresh/`, {
       refresh: authTokens.refresh
     });
-
-    console.log(response.data)
 
     localStorage.setItem("authTokens", JSON.stringify(response.data));
 

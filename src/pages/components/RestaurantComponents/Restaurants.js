@@ -6,7 +6,7 @@ import { Restaurantblock } from './Restaurantblock';
 
 export const Restaurants = () => {
 
-  const [baseURL, setbaseURL] = useState("http://localhost:8000/api/getrestaurant/")
+  const [baseURL, setbaseURL] = useState("https://food-bear.herokuapp.com/api/getrestaurant/")
 
   const [Restaurantdata, setRestaurantdata] = useState({
     'count': 0,
@@ -68,34 +68,3 @@ const changeurln = () =>{
     </div>
   )
 }
-
-
-
-  // useEffect(()=>{
-  //   axios.get(baseURL)
-  //   .then((response) => {
-  //     // setRestaurantdata()
-
-  //     setRestaurantdata({...Restaurantdata, 'count': response.data['count'] });
-  //     // setRestaurantdata({...Restaurantdata, 'next': response.data['next'] });
-  //     // setRestaurantdata({...Restaurantdata, 'previous': response.data['previous'] });
-  //     // setRestaurantdata({...Restaurantdata, 'data': response.data['data'] });
-
-
-  //     console.log(response.data);
-  //     // console.log(response.data['results']);
-  //     // console.log(response.data['count']);
-  //     // console.log(response.data['next']);
-  //     // console.log(response.data['data']);
-  //   }, []);
-
-
-  // })
-
-  // <p key={restaurant.id}>
-      //   {restaurant.id}
-      //   {restaurant.Name}
-      //   {restaurant.Address}
-      //   {restaurant.description}
-      //   {restaurant.photo}
-      // </p>

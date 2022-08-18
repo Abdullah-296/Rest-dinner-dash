@@ -31,19 +31,16 @@ export const AuthProvider = ({ children }) => {
 
 
   const logout = () => {
-    console.log(authTokens);
-    console.log(user);
+
     setAuthTokens(null);
     setUser(null);
     localStorage.removeItem("authTokens");
-    console.log(authTokens);
-    console.log(user);
+
     navigate('/');
   }
 
-
   const registerUser = async (username, first_name, last_name, email, password, password2) => {
-    const response = await fetch("http://localhost:8000/api/registeruser/", {
+    const response = await fetch("https://food-bear.herokuapp.com/api/registeruser/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,8 +58,7 @@ export const AuthProvider = ({ children }) => {
     const data = await response.json();
 
     if (response.status === 201) {
-      console.log('User registered');
-      navigate('/');
+      navigate('/login');
     } else {
       console.log(data);
       setError(
@@ -76,7 +72,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginUser = async (username, password) => {
-    const response = await fetch("http://localhost:8000/api/token/", {
+    const response = await fetch("https://food-bear.herokuapp.com/api/token/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -93,9 +89,6 @@ export const AuthProvider = ({ children }) => {
 
       setAuthTokens(data);
       setUser(jwt_decode(data.access));
-
-      console.log(data);
-      console.log(jwt_decode(data.access));
       localStorage.setItem("authTokens", JSON.stringify(data));
 
       navigate('/admin');

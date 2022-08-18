@@ -26,11 +26,3 @@ export const Restaurantblock = (props) => {
     </div>
   )
 }
-
-
-// {props.restaurant.id}
-//       {props.restaurant.id}
-//       {props.restaurant.Name}
-//       {props.restaurant.Address}
-//       {props.restaurant.description}
-//       {props.restaurant.photo}
